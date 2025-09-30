@@ -1,14 +1,16 @@
-import { useAccount, useConnect, useDisconnect, useChains, useChainId } from 'wagmi'
+import { useAccount, useConnect, useReconnect, useDisconnect, useChains, useChainId, Config } from 'wagmi'
 import type { WalletState } from '../../types'
 
 export function useWalletConnection(): WalletState & 
 { connect: (connectorId?: string) => void,
-   disconnect: () => void 
+  reconnect: (config: Config | undefined) => void,
+  disconnect: () => void 
 } {
   const { address, connector, isConnected, isConnecting, isReconnecting } = useAccount()
   const chainId = useChainId()
   const chains = useChains()
   const { connect: wagmiConnect, connectors } = useConnect()
+  const { reconnect: wagmiReconnect } = useReconnect()
   const {disconnect: wagmiDisconnect} = useDisconnect()
 
   // 根据当前chainId找到对应的chain对象
@@ -28,6 +30,10 @@ export function useWalletConnection(): WalletState &
     }
   }
 
+  const reconnect = (config: Config | undefined) => {
+    wagmiReconnect(config)
+  }
+
   const disconnect = () => {
     wagmiDisconnect()
   }
@@ -45,6 +51,7 @@ export function useWalletConnection(): WalletState &
     chain: currentChain,
     chains,
     connect,
+    reconnect,
     disconnect
   }
 }

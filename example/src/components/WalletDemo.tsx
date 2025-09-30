@@ -1,5 +1,4 @@
 import { useWalletConnection, useWalletInfo, useNetworkSwitch } from 'uni-wallet-lib'
-// import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { WalletButton as ConnectButton} from 'uni-wallet-lib'
 import { useState } from 'react'
 import { mainnet, sepolia, polygon, arbitrum, optimism, base } from 'viem/chains'

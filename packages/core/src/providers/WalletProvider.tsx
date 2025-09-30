@@ -3,7 +3,7 @@ import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createWalletConfig, type WalletConfigOptions } from '../config/wagmi'
-import { customLightTheme, customDarkTheme } from '../config/rainbowkit'
+import { customDarkTheme } from '../config/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 
 export interface WalletProviderProps extends WalletConfigOptions {
@@ -43,8 +43,11 @@ export function WalletProvider({
   }, [theme])
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig}>
+    <WagmiProvider 
+      config={wagmiConfig} 
+      reconnectOnMount={true}
+    >
+      <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={rainbowKitTheme}
           modalSize="compact"
@@ -52,7 +55,7 @@ export function WalletProvider({
         >
           {children}
         </RainbowKitProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }

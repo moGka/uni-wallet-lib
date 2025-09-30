@@ -36,7 +36,7 @@ export function createWalletConfig(options: WalletConfigOptions) {
     appName,
     projectId,
     chains: supportedChains,
-    ssr: true
+    ssr: true,
   })
 
   return {
