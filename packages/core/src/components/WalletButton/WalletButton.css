@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 10px;
+  height: 44px;
 }
 
 .wallet-button__connect {
@@ -120,29 +120,4 @@
   font-weight: 600;
   font-size: 0.875rem;
   color: #4ade80;
-}
-
-/* Size variants */
-.wallet-button--small .wallet-button__connect,
-.wallet-button--small .wallet-button__wrong-network {
-  padding: 8px 16px;
-  font-size: 12px;
-}
-
-.wallet-button--small .wallet-button__chain,
-.wallet-button--small .wallet-button__account {
-  padding: 6px 10px;
-  font-size: 11px;
-}
-
-.wallet-button--large .wallet-button__connect,
-.wallet-button--large .wallet-button__wrong-network {
-  padding: 16px 32px;
-  font-size: 16px;
-}
-
-.wallet-button--large .wallet-button__chain,
-.wallet-button--large .wallet-button__account {
-  padding: 12px 16px;
-  font-size: 15px;
 }
