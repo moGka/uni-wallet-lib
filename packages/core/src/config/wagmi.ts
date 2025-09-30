@@ -1,4 +1,4 @@
-import { http } from 'wagmi'
+import { http, createStorage, cookieStorage } from 'wagmi'
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { supportedChains } from './chains'
 
@@ -37,6 +37,9 @@ export function createWalletConfig(options: WalletConfigOptions) {
     projectId,
     chains: supportedChains,
     ssr: true,
+    storage: createStorage({
+      storage: cookieStorage
+    })
   })
 
   return {
