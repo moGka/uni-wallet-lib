@@ -21,12 +21,12 @@ const defaultQueryClient = new QueryClient ({
   }
 })
 
-export const WalletProvider: React.FC<WalletProviderProps> = ({
+export function WalletProvider({
   children,
   theme = 'auto',
   queryClient = defaultQueryClient,
   ...configOptions
-}: WalletProviderProps) => {
+}: WalletProviderProps): React.ReactElement {
 
   const { config: wagmiConfig } = React.useMemo(
     () => createWalletConfig(configOptions),

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import './WalletButton.module.css'
+import './WalletButton.css'
 
 export interface WalletButtonProps {
   label?: string,

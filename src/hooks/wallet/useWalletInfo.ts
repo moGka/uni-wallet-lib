@@ -1,9 +1,12 @@
-import { useAccount, useBalance, useChains } from 'wagmi'
+import { useAccount, useBalance, useChainId, useEnsName, useChains } from 'wagmi'
 import { formatEther } from 'viem'
 
 export function useWalletInfo() {
   const { address, connector, isConnected } = useAccount()
-  const chain = useChains()
+  const chainId = useChainId()
+  const chains = useChains()
+  const chain = chains.find(c => c.id === chainId)
+  const { data: ensName } = useEnsName({ address })
   const { data: balance, isLoading: isBalanceLoading } = useBalance({
     address: address,
   })
@@ -18,15 +21,15 @@ export function useWalletInfo() {
   return {
     address,
     isConnected,
+    ensName,
+    chainId,
     connector: connector ? {
       id: connector.id,
       name: connector.name,
       type: connector.type,
       icon: connector.icon
     } : undefined,
-    chain: chain ? {
-
-    } : undefined,
+    chain,
     balance: formattedBalance,
     isBalanceLoading
   }

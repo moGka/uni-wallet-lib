@@ -6,6 +6,7 @@ import json from '@rollup/plugin-json'                        // 支持导入 JS
 import peerDepsExternal from 'rollup-plugin-peer-deps-external' // 将 peer dependencies 标记为外部依赖
 import { terser } from 'rollup-plugin-terser'                 // 代码压缩插件
 import dts from 'rollup-plugin-dts'                           // 生成 TypeScript 声明文件
+import postcss from 'rollup-plugin-postcss'                   // CSS 处理插件
 
 // 判断是否为生产环境构建（非 watch 模式）
 const production = !process.env.ROLLUP_WATCH
@@ -20,7 +21,7 @@ export default [
       {
         file: 'dist/index.js',        // CommonJS 格式输出
         format: 'cjs',                // CommonJS 模块格式
-        sourcemap: true,              // 生成 source map
+        // sourcemap: true,              // 生成 source map
         exports: 'named'              // 使用命名导出
       },
       {
@@ -36,12 +37,19 @@ export default [
       // 解析 node_modules 中的模块
       resolve({
         browser: true,                // 优先使用浏览器版本的包
-        preferBuiltins: false         // 不使用 Node.js 内置模块
+        preferBuiltins: false,        // 不使用 Node.js 内置模块
+        extensions: ['.js', '.ts', '.tsx', '.json']  // 支持的文件扩展名
       }),
       // 转换 CommonJS 模块为 ES6
       commonjs(),
       // 支持导入 JSON 文件
       json(),
+      // CSS 处理
+      postcss({
+        extract: true,                // 提取 CSS 到单独文件
+        minimize: production,         // 生产环境压缩 CSS
+        modules: false                // 禁用 CSS Modules，使用普通CSS
+      }),
       // SWC 编译器配置
       swc({
         swc: {

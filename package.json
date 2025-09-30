@@ -2,10 +2,13 @@
   "name": "uni-wallet-lib",
   "version": "1.0.0",
   "description": "A comprehensive Web3 wallet library based on wagmi and rainbowkit",
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rollup -c",
     "build:watch": "rollup -c -w",
@@ -25,6 +28,10 @@
     "viem": "^2.37.9",
     "wagmi": "^2.17.5"
   },
+  "peerDependencies": {
+    "react": ">=18 <19",
+    "react-dom": ">=18 <19"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-json": "^6.1.0",
@@ -32,17 +39,18 @@
     "@rollup/plugin-swc": "^0.4.0",
     "@swc/cli": "^0.7.8",
     "@swc/core": "^1.13.5",
-    "@types/react": "^19.1.15",
-    "@types/react-dom": "^19.1.9",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.44.1",
     "eslint": "^9.36.0",
     "prettier": "^3.6.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rollup": "^4.52.3",
     "rollup-plugin-dts": "^6.2.3",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
     "typescript": "^5.9.2"
   }
