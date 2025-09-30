@@ -39,9 +39,7 @@ export function WalletProvider({
   )
 
   const rainbowKitTheme = React.useMemo(() => {
-    if (theme === 'dark') return customDarkTheme
-    if (theme === 'light') return customLightTheme
-    return undefined
+    return customDarkTheme
   }, [theme])
 
   return (

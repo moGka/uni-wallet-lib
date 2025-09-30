@@ -14,7 +14,7 @@
     "@rainbow-me/rainbowkit": "^2.2.8",
     "viem": "^2.37.9",
     "@tanstack/react-query": "^5.90.2",
-    "uni-wallet-lib": "file:.."
+    "uni-wallet-lib": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

@@ -8,11 +8,13 @@
 .wallet-button__container {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  height: 10px;
 }
 
 .wallet-button__connect {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(to right, #eab308, #f97316);
   border: none;
   border-radius: 12px;
   color: white;
@@ -47,71 +49,77 @@
 .wallet-button__connected {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 16px;
 }
 
 .wallet-button__chain {
-  background: #f1f5f9;
+  background: oklch(.424 .199 265.638);
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   color: #475569;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
   padding: 8px 12px;
   transition: all 0.2s ease;
   font-size: 13px;
   font-weight: 500;
-}
-
-.wallet-button__chain:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
+  gap: 1em;
 }
 
 .wallet-button__chain-icon {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .wallet-button__icon {
-  width: 100%;
-  height: 100%;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: linear-gradient(to right, #facc15, #f97316);
   border-radius: 50%;
-}
-
-.wallet-button__account {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  color: #1e293b;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.wallet-button__account:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  justify-content: center;
 }
 
 .wallet-button__balance {
-  color: #64748b;
-  font-size: 12px;
+  font-size: 1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.wallet-button__account {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.5rem;
+  background-color: rgba(22, 163, 74, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 0.5rem;
+  padding: 0 12px;
+  height: 40px;
+  min-width: 150px;
+}
+
+.wallet-button__status-bot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #4ade80;
+  border-radius: 9999px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.wallet-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #4ade80;
 }
 
 .wallet-button__address {
   font-weight: 600;
-  color: #1e293b;
+  font-size: 0.875rem;
+  color: #4ade80;
 }
 
 /* Size variants */

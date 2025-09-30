@@ -1,57 +1,20 @@
 {
-  "name": "uni-wallet-lib",
+  "name": "uni-wallet-lib-workspace",
   "version": "1.0.0",
-  "description": "A comprehensive Web3 wallet library based on wagmi and rainbowkit",
+  "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build": "rollup -c",
-    "build:watch": "rollup -c -w",
-    "dev": "rollup -c -w",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.17.0",
-  "dependencies": {
-    "@rainbow-me/rainbowkit": "^2.2.8",
-    "@tanstack/react-query": "^5.90.2",
-    "viem": "^2.37.9",
-    "wagmi": "^2.17.5"
-  },
-  "peerDependencies": {
-    "react": ">=18 <19",
-    "react-dom": ">=18 <19"
+    "dev": "pnpm --filter uni-wallet-lib-example dev",
+    "dev:lib": "pnpm --filter core dev",
+    "dev:both": "concurrently \"pnpm --filter core build:watch\" \"pnpm --filter example dev\"",
+    "build": "pnpm --filter core build",
+    "build:lib": "pnpm --filter core build",
+    "build:example": "pnpm --filter example build",
+    "type-check": "pnpm --filter core type-check",
+    "lint": "pnpm --filter core lint",
+    "clean": "pnpm --filter core clean"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-swc": "^0.4.0",
-    "@swc/cli": "^0.7.8",
-    "@swc/core": "^1.13.5",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.44.1",
-    "@typescript-eslint/parser": "^8.44.1",
-    "eslint": "^9.36.0",
-    "prettier": "^3.6.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rollup": "^4.52.3",
-    "rollup-plugin-dts": "^6.2.3",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-terser": "^7.0.2",
-    "typescript": "^5.9.2"
+    "concurrently": "^8.2.2"
   }
 }
