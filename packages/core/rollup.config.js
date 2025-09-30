@@ -46,7 +46,8 @@ export default [
       json(),
       // CSS 处理
       postcss({
-        extract: true,                // 提取 CSS 到单独文件
+        extract: false,                // 提取 CSS 到单独文件
+        inject: true,                 // 将 CSS 注入到 JS 中，运行时自动插入到
         minimize: production,         // 生产环境压缩 CSS
         modules: false                // 禁用 CSS Modules，使用普通CSS
       }),
