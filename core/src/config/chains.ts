@@ -1,14 +1,16 @@
-import { mainnet } from 'wagmi/chains'
+import { mainnet, sepolia } from 'wagmi/chains'
 import type { Chain } from 'viem'
 
 export const supportedChains: readonly [Chain, ...Chain[]] = [
-  mainnet
+  mainnet,
+  sepolia
 ] as const
 
 export const defaultChain = mainnet
 
 export const chainIcons: Record<number, string> = {
   [mainnet.id]: '🔷',
+  [sepolia.id]: '🔷'
 }
 
 export const getChainIcon = (chainId: number): string => {
