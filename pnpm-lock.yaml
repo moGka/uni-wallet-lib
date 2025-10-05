@@ -28,7 +28,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       uni-wallet-lib:
         specifier: workspace:*
-        version: link:../packages/core
+        version: link:../core
       viem:
         specifier: ^2.37.9
         version: 2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.22.4)
@@ -52,7 +52,7 @@ importers:
         specifier: ^5.1.0
         version: 5.4.20(@types/node@24.5.2)(terser@5.44.0)
 
-  packages/core:
+  core:
     devDependencies:
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.8

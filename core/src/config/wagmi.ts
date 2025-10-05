@@ -10,7 +10,12 @@ export interface WalletConfigOptions {
 }
 
 export function createWalletConfig(options: WalletConfigOptions) {
-  const { appName, projectId, alchemyApiKey, infuraApiKey } = options
+  const { 
+    appName = 'APP_NAME', // 传给 coinbaseWallet
+    projectId = 'YOUR_PROJECT_ID', // 传给 walletConnect
+    alchemyApiKey, 
+    infuraApiKey 
+  } = options
 
   // 创建传输层配置
   const transports = supportedChains.reduce((acc, chain) => {

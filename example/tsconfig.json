@@ -16,13 +16,13 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "uni-wallet-lib": ["../../packages/core/src"],
-      "uni-wallet-lib/*": ["../../packages/core/src/*"]
+      "uni-wallet-lib": ["../../core/src"],
+      "uni-wallet-lib/*": ["../../core/src/*"]
     }
   },
   "include": [
     "src",
-    "../../packages/core/src"
+    "../../core/src"
   ],
   "exclude": [
     "node_modules"
