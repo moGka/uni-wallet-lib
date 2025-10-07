@@ -9,6 +9,7 @@ const SimpleYDTokenDemo = () => {
   const [transferTo, setTransferTo] = useState<Address>()
   const [transferAmount, setTransferAmount] = useState('')
   const [approveAmount, setApproveAmount] = useState('')
+  const [ethAmount, setEthAmount] = useState('')
 
   const {
     totalSupply,
@@ -20,6 +21,7 @@ const SimpleYDTokenDemo = () => {
     refetchAllowance,
     transfer,
     approve,
+    exchangeETHForTokens,
   } = useSimpleYDToken({
     spenderAddress,
     enabled: !!userAddress,
@@ -50,6 +52,20 @@ const SimpleYDTokenDemo = () => {
       setTimeout(() => refetchAllowance(), 3000)
     } catch (error: any) {
       alert(`授权失败: ${error.message}`)
+    }
+  }
+
+  const handleExchangeETH = async () => {
+    if (!ethAmount) {
+      alert('请输入要兑换的 ETH 数量')
+      return
+    }
+    try {
+      await exchangeETHForTokens(ethAmount)
+      alert('兑换交易已提交，等待确认...')
+      setTimeout(() => refetchBalance(), 3000)
+    } catch (error: any) {
+      alert(`兑换失败: ${error.message}`)
     }
   }
 
@@ -114,6 +130,85 @@ const SimpleYDTokenDemo = () => {
                 value={`${formatBalance(allowance)} YD`}
                 sublabel={`授权给: ${spenderAddress.slice(0, 6)}...${spenderAddress.slice(-4)}`}
               />
+            </div>
+          </div>
+
+          {/* ETH 兑换 YD */}
+          <div style={{
+            background: '#e0f2fe',
+            borderRadius: '12px',
+            padding: '24px',
+            marginBottom: '24px'
+          }}>
+            <h2 style={{
+              color: '#374151',
+              marginBottom: '16px',
+              fontSize: '20px',
+              fontWeight: '600'
+            }}>
+              🔄 ETH 兑换 YD
+            </h2>
+
+            <div style={{ display: 'grid', gap: '16px' }}>
+              <div style={{
+                background: 'white',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
+                fontSize: '14px',
+                color: '#6b7280'
+              }}>
+                💡 兑换比例: 1 ETH = 4000 YD
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontWeight: '500',
+                  color: '#6b7280'
+                }}>
+                  ETH 数量:
+                </label>
+                <input
+                  type="text"
+                  placeholder="0.1"
+                  value={ethAmount}
+                  onChange={(e) => setEthAmount(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+                {ethAmount && (
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginTop: '4px'
+                  }}>
+                    ≈ {(parseFloat(ethAmount) * 4000).toFixed(2)} YD
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleExchangeETH}
+                style={{
+                  background: '#0ea5e9',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                🔄 兑换 YD
+              </button>
             </div>
           </div>
 
