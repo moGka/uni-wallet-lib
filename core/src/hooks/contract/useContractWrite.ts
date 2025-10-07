@@ -1,16 +1,12 @@
-import { 
-  useWriteContract, 
-  useWaitForTransactionReceipt, 
-  type UseWriteContractReturnType, 
-  type UseWaitForTransactionReceiptReturnType 
-} from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import type { UseWriteContractReturnType, UseWaitForTransactionReceiptReturnType } from 'wagmi'
 import type { Address, Abi, Hash } from 'viem'
 
 interface UseContractWriteProps {
   address: Address,
   abi: Abi,
   functionName: string,
-  args: unknown[],
+  args?: unknown[],
   value?: bigint,
   chainId?: number,
   enabled?: boolean,
@@ -43,7 +39,10 @@ export function useContractWrite({
   } = useWriteContract()
 
   const receipt = useWaitForTransactionReceipt({
-    hash: returnTypes.data
+    hash: returnTypes.data,
+    query: {
+      enabled: !!returnTypes.data, // 只在有 hash 时才开始监听
+    },
   })
 
   const write = (overrideArgs?: unknown[]) => {

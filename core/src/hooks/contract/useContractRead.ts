@@ -1,4 +1,5 @@
-import { useReadContract, type UseReadContractReturnType } from 'wagmi'
+import { useReadContract } from 'wagmi'
+import type { UseReadContractReturnType } from 'wagmi'
 import { type Address, type Abi } from 'viem'
 
 interface UseContractReadProps {
@@ -12,7 +13,9 @@ interface UseContractReadProps {
   staleTime?: number,   // 数据过期暗
 }
 
-export function useContractRead({
+export type UseContractReadReturn<T> = Omit<UseReadContractReturnType, 'data'> & { data: T }
+
+export function useContractRead<T = unknown>({
   address,
   abi,
   functionName,
@@ -21,9 +24,9 @@ export function useContractRead({
   enabled = true,
   cacheTime = 0,
   staleTime = 0
-}: UseContractReadProps): UseReadContractReturnType {
+}: UseContractReadProps): UseContractReadReturn<T> {
 
-  const result = useReadContract({
+  const { data, ...result } = useReadContract({
     address,
     abi,
     functionName,
@@ -36,5 +39,9 @@ export function useContractRead({
     }
   })
 
-  return result
+  
+  return {
+    data: data as T,
+    ...result
+  }
 }
