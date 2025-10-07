@@ -3,8 +3,9 @@ import type { Address } from 'viem'
 import { useContractRead } from './useContractRead'
 import { useContractWrite } from './useContractWrite'
 import { SIMPLE_YD_TOKEN_ABI } from '../../contract'
-import { useAccount } from 'wagmi'
+import { useAccount, useEstimateGas } from 'wagmi'
 import type { UseWaitForTransactionReceiptReturnType as ReceiptReturnType } from 'wagmi'
+import { useState } from 'react'
 
 interface UseSimpleYDTokenProps {
   address?: Address,           // YD币合约地址 默认：0xA812265c869F2BCB755980677812F253459A0cc7
@@ -43,6 +44,20 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
 
   const { address: userAddress } = useAccount()
 
+  const [estGasTo, setEstGasTo] = useState<Address>()
+  const [estGasValue, setEstGasValue] = useState<bigint>()
+  const { 
+    data: gasEstimate, 
+    refetch: refetchEstimateGas,
+  } = useEstimateGas({
+      account: userAddress,
+      to: estGasTo,
+      value: estGasValue,
+      query: {
+        enabled: false
+      }
+    })
+
   /* ========== 辅助方法 ========== */
   /**
    * 解析金额
@@ -54,6 +69,23 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const parseAmount = (amount: string) => {
     if (!decimals) throw new Error('Decimals not loaded')
     return parseUnits(amount, decimals as number)
+  }
+
+  const prepareRefetchEstimateGas = async (to?: Address, value?: bigint) => {
+    setEstGasTo(to)
+    setEstGasValue(value)
+
+    // 等待 React 下一次渲染周期，确保 state 更新
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    console.log(`🔢 请求参数: to->${to} / value->${value}`)
+    // 然后调用 refetch
+    await refetchEstimateGas()
+    console.log('⛽️ Estimate Gas:', gasEstimate)
+
+    // ✅ 立即清理
+    setEstGasTo(undefined)
+    setEstGasValue(undefined)
   }
 
   /* ========== 读取合约数据 ========== */
@@ -111,6 +143,9 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const transfer = async (to: Address, amount: string) => {
     if (!transferWrite.writeAsync) throw new Error('Transfer not available')
     const parsedAmount = parseAmount(amount)
+  
+    await prepareRefetchEstimateGas(to, parsedAmount)
+
     return transferWrite.writeAsync({ args: [to, parsedAmount] })
   }
 
@@ -131,6 +166,9 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const approve = async (spender: Address, amount: string) => {
     if (!approveWrite.writeAsync) throw new Error('Approve not available')
     const parsedAmount = parseAmount(amount)
+    
+    await prepareRefetchEstimateGas(YD_CONTRACT_ADDRESS, undefined)
+
     return approveWrite.writeAsync({args: [spender, parsedAmount]})
   }
 
@@ -152,6 +190,9 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const transferFrom = async (from: Address, to: Address, amount: string) => {
     if (!transferFromWrite.writeAsync) throw new Error('TransferFrom not available')
     const parsedAmount = parseAmount(amount)
+
+    await prepareRefetchEstimateGas(to, parsedAmount)
+
     return transferFromWrite.writeAsync({args: [from, to, parsedAmount]})
   }
 
@@ -161,9 +202,16 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
     abi: SIMPLE_YD_TOKEN_ABI,
     functionName: 'exchangeETHForTokens'
   })
-  const exchangeETHForTokens = (ether: string) => {
+  const exchangeETHForTokens = async (ether: string) => {
+    if (!exchangeETHForTokensWriter.writeAsync) {
+      throw new Error('Exchange not available')
+    }
+
+    await prepareRefetchEstimateGas(YD_CONTRACT_ADDRESS, parseEther(ether))
+    
     return exchangeETHForTokensWriter.writeAsync({
-      value: parseEther(ether)
+      value: parseEther(ether),
+      gas: gasEstimate
     })
   }
 
