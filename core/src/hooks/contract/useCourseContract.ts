@@ -195,7 +195,7 @@ export function useCourseContract({
       throw new Error('创建课程方法未创建')
     }
     const parsedPrice = parsePrice(price)
-    return createCourseWriter.writeAsync([title, instructor, parsedPrice])
+    return createCourseWriter.writeAsync({ args: [title, instructor, parsedPrice] })
   }
 
   // 购买课程
@@ -208,7 +208,7 @@ export function useCourseContract({
     if (!purchaseCourseWriter.writeAsync) {
       throw new Error('创建课程方法未创建')
     }
-    return purchaseCourseWriter.writeAsync([courseId])
+    return purchaseCourseWriter.writeAsync({ args: [courseId] })
   }
 
   return {

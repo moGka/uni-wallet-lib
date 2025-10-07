@@ -13,12 +13,20 @@ interface UseContractWriteProps {
   gasLimit?: bigint
 }
 
+interface WriteOverrides {
+  args?: unknown[]
+  value?: bigint
+  gas?: bigint
+}
+
+export type { WriteOverrides }
+
 type UseContractWriteReturn = 
 Omit<UseWriteContractReturnType, 'writeContract' | 'writeContractAsync'> & 
 {
   receipt: UseWaitForTransactionReceiptReturnType,
-  write: (overrideArgs?: unknown[]) => void,
-  writeAsync: (overrideArgs?: unknown[]) => Promise<Hash | undefined>,
+  write: (overrides?: WriteOverrides) => void,
+  writeAsync: (overrides?: WriteOverrides) => Promise<Hash | undefined>,
 }
 
 export function useContractWrite({
@@ -45,29 +53,29 @@ export function useContractWrite({
     },
   })
 
-  const write = (overrideArgs?: unknown[]) => {
+  const write = (overrides?: WriteOverrides) => {
     if (!enabled) return
     writeContract({
       address,
       abi,
       functionName,
-      args: overrideArgs || args,
-      value,
+      args: overrides?.args || args,
+      value: overrides?.value || value,
       chainId,
-      gas: gasLimit
+      gas: overrides?.gas || gasLimit
     })
   }
 
-  const writeAsync = async (overrideArgs?: unknown[]) => {
+  const writeAsync = async (overrides?: WriteOverrides) => {
     if (!enabled) return
     return await writeContractAsync({
       address,
       abi,
       functionName,
-      args: overrideArgs || args,
-      value,
+      args: overrides?.args || args,
+      value: overrides?.value || value,
       chainId,
-      gas: gasLimit
+      gas: overrides?.gas || gasLimit
     })
   }
 

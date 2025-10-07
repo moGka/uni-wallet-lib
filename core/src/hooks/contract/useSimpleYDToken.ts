@@ -1,4 +1,4 @@
-import { parseUnits } from 'viem'
+import { parseUnits, parseEther } from 'viem'
 import type { Address } from 'viem'
 import { useContractRead } from './useContractRead'
 import { useContractWrite } from './useContractWrite'
@@ -37,6 +37,8 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   approve: (spender: Address, amount: string) => Promise<any>
   // 代理转账函数（从其他地址转账
   transferFrom: (from: Address, to: Address, amount: string) => Promise<any>
+  // ETH兑换YD币
+  exchangeETHForTokens: (ether: string) => Promise<any>
 } {
 
   const { address: userAddress } = useAccount()
@@ -109,7 +111,7 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const transfer = async (to: Address, amount: string) => {
     if (!transferWrite.writeAsync) throw new Error('Transfer not available')
     const parsedAmount = parseAmount(amount)
-    return transferWrite.writeAsync([to, parsedAmount])
+    return transferWrite.writeAsync({ args: [to, parsedAmount] })
   }
 
   // 授权
@@ -129,7 +131,7 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const approve = async (spender: Address, amount: string) => {
     if (!approveWrite.writeAsync) throw new Error('Approve not available')
     const parsedAmount = parseAmount(amount)
-    return approveWrite.writeAsync([spender, parsedAmount])
+    return approveWrite.writeAsync({args: [spender, parsedAmount]})
   }
 
   // 代理转账函数的写入 Hook
@@ -150,7 +152,19 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
   const transferFrom = async (from: Address, to: Address, amount: string) => {
     if (!transferFromWrite.writeAsync) throw new Error('TransferFrom not available')
     const parsedAmount = parseAmount(amount)
-    return transferFromWrite.writeAsync([from, to, parsedAmount])
+    return transferFromWrite.writeAsync({args: [from, to, parsedAmount]})
+  }
+
+  // 兑换YD币 (ETH -> YD)
+  const exchangeETHForTokensWriter = useContractWrite({
+    address,
+    abi: SIMPLE_YD_TOKEN_ABI,
+    functionName: 'exchangeETHForTokens'
+  })
+  const exchangeETHForTokens = (ether: string) => {
+    return exchangeETHForTokensWriter.writeAsync({
+      value: parseEther(ether)
+    })
   }
 
 
@@ -168,6 +182,7 @@ export function useSimpleYDToken({ address = YD_CONTRACT_ADDRESS, spenderAddress
     refetchAllowance,
     transfer,
     approve,
-    transferFrom
+    transferFrom,
+    exchangeETHForTokens
   }
 }

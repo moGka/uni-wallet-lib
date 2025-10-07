@@ -107,7 +107,7 @@ export function useERC20({ address, spenderAddress, enabled = true }: UseERC20Pr
   const transfer = async (to: Address, amount: string) => {
     if (!transferWrite.writeAsync) throw new Error('Transfer not available')
     const parsedAmount = parseAmount(amount)
-    return transferWrite.writeAsync([to, parsedAmount])
+    return transferWrite.writeAsync({ args: [to, parsedAmount] })
   }
 
   // 授权
@@ -127,7 +127,7 @@ export function useERC20({ address, spenderAddress, enabled = true }: UseERC20Pr
   const approve = async (spender: Address, amount: string) => {
     if (!approveWrite.writeAsync) throw new Error('Approve not available')
     const parsedAmount = parseAmount(amount)
-    return approveWrite.writeAsync([spender, parsedAmount])
+    return approveWrite.writeAsync({ args: [spender, parsedAmount] })
   }
 
   // 代理转账函数的写入 Hook
@@ -148,7 +148,7 @@ export function useERC20({ address, spenderAddress, enabled = true }: UseERC20Pr
   const transferFrom = async (from: Address, to: Address, amount: string) => {
     if (!transferFromWrite.writeAsync) throw new Error('TransferFrom not available')
     const parsedAmount = parseAmount(amount)
-    return transferFromWrite.writeAsync([from, to, parsedAmount])
+    return transferFromWrite.writeAsync({ args: [from, to, parsedAmount] })
   }
 
 
