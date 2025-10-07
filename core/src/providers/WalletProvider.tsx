@@ -10,7 +10,7 @@ export interface WalletProviderProps extends WalletConfigOptions {
   children: React.ReactNode
   theme?: 'light' | 'dark' | 'auto'
   queryClient?: QueryClient,
-  initialState: State | undefined
+  initialState?: State | undefined
 }
 
 const defaultQueryClient = new QueryClient ({

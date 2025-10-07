@@ -1,5 +1,9 @@
 import { WalletProvider } from 'uni-wallet-lib'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Navigation from './components/Navigation'
 import WalletDemo from './components/WalletDemo'
+import SimpleYDTokenDemo from './components/SimpleYDTokenDemo'
+import CourseContractDemo from './components/CourseContractDemo'
 
 function App() {
   return (
@@ -8,13 +12,21 @@ function App() {
       projectId="YOUR_WALLETCONNECT_PROJECT_ID"
       alchemyApiKey="YOUR_ALCHEMY_API_KEY"
     >
-      <div style={{ 
-        minHeight: '100vh', 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '20px'
-      }}>
-        <WalletDemo />
-      </div>
+      <BrowserRouter>
+        <div style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          padding: '20px'
+        }}>
+          <Navigation />
+
+          <Routes>
+            <Route path="/" element={<WalletDemo />} />
+            <Route path="/token" element={<SimpleYDTokenDemo />} />
+            <Route path="/course" element={<CourseContractDemo />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
     </WalletProvider>
   )
 }
