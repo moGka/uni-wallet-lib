@@ -12,11 +12,12 @@ const Navigation = () => {
 
   return (
     <div style={{
-      background: 'white',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      background: '#f0eee6',
+      // boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
       marginBottom: '24px',
       borderRadius: '12px',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      width: '100%'
     }}>
       <div style={{
         maxWidth: '1200px',
@@ -61,11 +62,10 @@ const Navigation = () => {
               {item.icon} {item.label}
             </Link>
           ))}
-
-          {/* Wallet Connect Button */}
-          <div style={{ marginLeft: '16px' }}>
-            <WalletButton />
-          </div>
+        </div>
+        {/* Wallet Connect Button */}
+        <div style={{ marginLeft: '16px' }}>
+          <WalletButton />
         </div>
       </div>
     </div>
