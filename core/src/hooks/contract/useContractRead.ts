@@ -38,7 +38,6 @@ export function useContractRead<T = unknown>({
       staleTime
     }
   })
-
   
   return {
     data: data as T,

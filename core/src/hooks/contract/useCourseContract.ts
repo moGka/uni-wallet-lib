@@ -4,6 +4,7 @@ import { useContractRead } from './useContractRead'
 import type { UseContractReadReturn } from './useContractRead'
 import { useContractWrite } from './useContractWrite'
 import { COURSE_CONTRACT_ABI } from '../../contract'
+import type { UseWaitForTransactionReceiptReturnType as ReceiptReturnType } from 'wagmi'
 
 const COURSE_CONTRACT_ADDRESS: Address = '0x0a42F4f8Cb23460BDeD2e18475920Bdb6df5641d'
 
@@ -29,11 +30,17 @@ export function useCourseContract({
   address = COURSE_CONTRACT_ADDRESS,
   tokenDecimals = 18
 }: UseCourseContractProps): {
+  createCourseReceipt: ReceiptReturnType
+  purchaseCourseReceipt: ReceiptReturnType
+
   hasAccess: (studentAddress?: Address, courseId?: bigint) => UseContractReadReturn<boolean>
   getCourse: (courseId?: bigint) => UseContractReadReturn<Course>
   getStudentCourses: (studentAddress: Address) => UseContractReadReturn<bigint[]>
   getCourseStudents: (courseId: bigint) => UseContractReadReturn<Address[]>
   getInstructorCourses: (instructorAddress: Address) => UseContractReadReturn<bigint[]>
+  getTotalCourses: () => UseContractReadReturn<bigint>
+  getCourseStudentCount: (courseId: bigint) => UseContractReadReturn<bigint>
+  batchCheckAccess: (student: Address, courseIds: bigint[]) => UseContractReadReturn<boolean[]>
 
   createCourse: (title: string, instructor: Address, price: string) => Promise<any>
   purchaseCourse: (courseId: bigint) => Promise<any>
@@ -125,6 +132,50 @@ export function useCourseContract({
     })
   }
 
+  /**
+   * 获取课程总数
+   * @returns 
+   */
+  const getTotalCourses = () => {
+    return useContractRead<bigint> ({
+      address,
+      abi: COURSE_CONTRACT_ABI,
+      functionName: 'getTotalCourses',
+      enabled: true
+    })
+  }
+
+  /**
+   * 获取课程学生数量
+   * @param courseId 课程ID
+   * @returns 
+   */
+  const getCourseStudentCount = (courseId: bigint) => {
+    return useContractRead<bigint>({
+      address,
+      abi: COURSE_CONTRACT_ABI,
+      functionName: 'getCourseStudentCount',
+      args: [courseId],
+      enabled: true
+    })
+  }
+
+  /**
+   * 批量检查访问权限
+   * @param student 学生地址
+   * @param courseIds 课程ID数组
+   * @returns 
+   */
+  const batchCheckAccess = (student: Address, courseIds: bigint[]) => {
+    return useContractRead<boolean[]>({
+      address,
+      abi: COURSE_CONTRACT_ABI,
+      functionName: 'batchCheckAccess',
+      args: [student, courseIds],
+      enabled: true
+    })
+  }
+
   /* ========== 写入合约数据 ========== */
   // 创建课程
   const createCourseWriter = useContractWrite({
@@ -160,14 +211,19 @@ export function useCourseContract({
     return purchaseCourseWriter.writeAsync([courseId])
   }
 
-
   return {
+    createCourseReceipt: createCourseWriter.receipt,
+    purchaseCourseReceipt: purchaseCourseWriter.receipt,
+    
     hasAccess,
     getCourse,
     getStudentCourses,
     getCourseStudents,
     getInstructorCourses,
-
+    getTotalCourses,
+    getCourseStudentCount,
+    batchCheckAccess,
+    
     createCourse,
     purchaseCourse
   }
