@@ -1,10 +1,12 @@
 import { parseUnits } from 'viem'
-import type { Address } from 'viem'
-import { useContractRead } from './useContractRead'
-import type { UseContractReadReturn } from './useContractRead'
 import { useContractWrite } from './useContractWrite'
+import { contractFactory } from './contractFactory'
 import { COURSE_CONTRACT_ABI } from '../../contract'
 import type { UseWaitForTransactionReceiptReturnType as ReceiptReturnType } from 'wagmi'
+import type { Address, Hash } from 'viem'
+import type { UseContractReadReturn } from './useContractRead'
+import type { WriteReturnType } from './contractFactory'
+
 
 const COURSE_CONTRACT_ADDRESS: Address = '0x0a42F4f8Cb23460BDeD2e18475920Bdb6df5641d'
 
@@ -71,7 +73,7 @@ export function useCourseContract({
   isCertifiedInstructor(instructor: Address): UseContractReadReturn<boolean>
 
   /* 合约写入方法 */
-  createCourse: (title: string, instructor: Address, price: string, totalLessons: bigint) => Promise<any>
+  createCourse: (title: string, instructor: Address, price: string, totalLessons: bigint) => Promise<WriteReturnType>
   purchaseCourse: (courseId: bigint) => Promise<any>
   updateCoursePrice: (courseId: bigint, newPrice: string) => Promise<any>
   updateCourseProgress: (courseId: bigint, completedLessons: bigint) => Promise<any>
@@ -85,6 +87,8 @@ export function useCourseContract({
   unpublishCourse: (courseId: bigint) => Promise<any>
   deleteCourse: (courseId: bigint) => Promise<any>
 } {
+
+  const factory = contractFactory(address, COURSE_CONTRACT_ABI)
 
   // ========== 工具函数 ==========
 
@@ -104,14 +108,7 @@ export function useCourseContract({
    * @param courseId 课程ID
    */
   const hasAccess = (student?: Address, courseId?: bigint) => {
-    const hasArgs = Boolean(student && courseId)
-    return useContractRead<boolean>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'hasAccess',
-      args: hasArgs ? [student as Address, courseId as bigint] : undefined,
-      enabled: hasArgs,
-    })
+    return factory.read<boolean>('hasAccess')(student, courseId)
   }
 
   /**
@@ -119,13 +116,7 @@ export function useCourseContract({
    * @param courseId 课程ID
    */
   const getCourse = (courseId?: bigint) => {
-    return useContractRead<Course>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getCourse',
-      args: courseId ? [courseId] : undefined,
-      enabled: true
-    })
+    return factory.read<Course>('getCourse')(courseId)
   }
 
   /**
@@ -133,13 +124,7 @@ export function useCourseContract({
    * @param studentAddress 学生地址
    */
   const getStudentCourses = (student: Address) => {
-    return useContractRead<bigint[]>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getStudentCourses',
-      args: student ? [student] : undefined,
-      enabled: true
-    })
+    return factory.read<bigint[]>('getStudentCourses')(student)
   }
 
   /**
@@ -148,13 +133,7 @@ export function useCourseContract({
    * @returns 
    */
   const getCourseStudents = (courseId: bigint) => {
-    return useContractRead<Address[]>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getCourseStudents',
-      args: courseId ? [courseId] : undefined,
-      enabled: true
-    })
+    return factory.read<Address[]>('getCourseStudents')(courseId)
   }
 
   /**
@@ -163,13 +142,7 @@ export function useCourseContract({
    * @returns 
    */
   const getInstructorCourses = (instructor: Address) => {
-    return useContractRead<bigint[]>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getInstructorCourses',
-      args: instructor ? [instructor] : undefined,
-      enabled: true
-    })
+    return factory.read<bigint[]>('getInstructorCourses')(instructor)
   }
 
   /**
@@ -177,12 +150,7 @@ export function useCourseContract({
    * @returns 
    */
   const getTotalCourses = () => {
-    return useContractRead<bigint> ({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getTotalCourses',
-      enabled: true
-    })
+    return factory.read<bigint>('getTotalCourses')()
   }
 
   /**
@@ -191,13 +159,7 @@ export function useCourseContract({
    * @returns 
    */
   const getCourseStudentCount = (courseId: bigint) => {
-    return useContractRead<bigint>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getCourseStudentCount',
-      args: [courseId],
-      enabled: true
-    })
+    return factory.read<bigint>('getCourseStudentCount')(courseId)
   }
 
   /**
@@ -207,13 +169,7 @@ export function useCourseContract({
    * @returns 
    */
   const batchCheckAccess = (student: Address, courseIds: bigint[]) => {
-    return useContractRead<boolean[]>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'batchCheckAccess',
-      args: [student, courseIds],
-      enabled: true
-    })
+    return factory.read<boolean[]>('batchCheckAccess')(student, courseIds)
   }
 
   /**
@@ -223,13 +179,7 @@ export function useCourseContract({
    * @returns 
    */
   const getCourseProgress = (student: Address, courseId: bigint) => {
-    return useContractRead<LearningProgress>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getProgress',
-      args: [student, courseId],
-      enabled: true
-    })
+    return factory.read<LearningProgress>('getProgress')(student, courseId)
   }
 
   /**
@@ -238,13 +188,7 @@ export function useCourseContract({
    * @returns 
    */
   const getRefundRequest = (requestId: bigint) => {
-    return useContractRead<RefundRequest>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getRefundRequest',
-      args: [requestId],
-      enabled: true
-    })
+    return factory.read<RefundRequest>('getRefundRequest')(requestId)
   }
 
   /**
@@ -259,32 +203,21 @@ export function useCourseContract({
    * @return timeUntilEligible: bigint 距离满足最小持有时间的秒数 
    */
   const getRefundEligibilityDetails = (student: Address, courseId: bigint) => {
-    return useContractRead<[boolean, string, bigint, bigint, bigint, bigint]>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'getRefundEligibilityDetails',
-      args: [student, courseId],
-      enabled: true
-    })
+    return factory.read<[boolean, string, bigint, bigint, bigint, bigint]>('getRefundEligibilityDetails')(student, courseId)
   }
 
+  /**
+   * 检查是否为认证讲师
+   * @param instructor 讲师地址
+   * @return 是否认证
+   */
   const isCertifiedInstructor = (instructor: Address) => {
-    return useContractRead<boolean>({
-      address,
-      abi: COURSE_CONTRACT_ABI,
-      functionName: 'isCertifiedInstructor',
-      args: [instructor],
-      enabled: true
-    })
+    return factory.read<boolean>('isCertifiedInstructor')(instructor)
   }
 
   /* ========== 写入合约数据 ========== */
   // 创建课程
-  const createCourseWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'createCourse',
-  })
+  const createCourseWriter = factory.write('createCourse')
   /**
    * 创建课程
    * @param title 课程标题
@@ -293,13 +226,9 @@ export function useCourseContract({
    * @returns 
    */
   const createCourse = async (title: string, instructor: Address, price: string, totalLessons: bigint) => {
-    if (!createCourseWriter.writeAsync) {
-      throw new Error('创建课程方法未创建')
-    }
-    const parsedPrice = parsePrice(price)
-    return createCourseWriter.writeAsync({ args: [title, instructor, parsedPrice, totalLessons] })
+    return await createCourseWriter.send(title, instructor, parsePrice(price), totalLessons)
   }
-
+  
   // 购买课程
   const purchaseCourseWriter = useContractWrite({
     address,

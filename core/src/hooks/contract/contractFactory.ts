@@ -1,4 +1,5 @@
 import { Abi, Address } from 'viem'
+import type { Hash } from 'viem'
 import type { UseContractReadReturn } from './useContractRead'
 import { useContractRead } from './useContractRead'
 import { useContractWrite } from './useContractWrite'
@@ -6,10 +7,12 @@ import type { WriteOverrides } from './useContractWrite'
 import type { UseWaitForTransactionReceiptReturnType as ReceiptReturnType } from 'wagmi'
 
 
-type WriteVariables = {
+export type WriteVariables = {
     value?: bigint | undefined;
     gas?: bigint | undefined;
 }
+
+export type WriteReturnType = Hash | undefined
 
 /**
  * 🚀 链式调用 API：创建合约交互工厂（推荐）
