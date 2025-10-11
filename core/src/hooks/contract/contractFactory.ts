@@ -52,7 +52,7 @@ export function contractFactory(address: Address, abi: Abi) {
      * const balanceOf = factory.read<bigint>('balanceOf')
      * const { data } = balanceOf(userAddress)
      */
-    read: <T>(functionName: string) => {
+    read: <T>(functionName: string, enabled: boolean = true) => {
       return (...args: any[]): UseContractReadReturn<T> => {
         const hasArgs = args.length > 0 && args.every(arg => arg !== undefined)
         return useContractRead<T>({
@@ -60,7 +60,7 @@ export function contractFactory(address: Address, abi: Abi) {
           abi,
           functionName,
           args: hasArgs ? args : undefined,
-          enabled: true,
+          enabled: enabled,
         })
       }
     },
