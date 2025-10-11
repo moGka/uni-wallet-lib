@@ -1,9 +1,8 @@
 import { parseUnits } from 'viem'
-import { useContractWrite } from './useContractWrite'
+import type { Address } from 'viem'
 import { contractFactory } from './contractFactory'
 import { COURSE_CONTRACT_ABI } from '../../contract'
 import type { UseWaitForTransactionReceiptReturnType as ReceiptReturnType } from 'wagmi'
-import type { Address, Hash } from 'viem'
 import type { UseContractReadReturn } from './useContractRead'
 import type { WriteReturnType } from './contractFactory'
 
@@ -55,9 +54,6 @@ export function useCourseContract({
   address = COURSE_CONTRACT_ADDRESS,
   tokenDecimals = 18
 }: UseCourseContractProps): {
-  createCourseReceipt: ReceiptReturnType
-  purchaseCourseReceipt: ReceiptReturnType
-
   /* 合约查询方法 */
   hasAccess: (student?: Address, courseId?: bigint) => UseContractReadReturn<boolean>
   getCourse: (courseId?: bigint) => UseContractReadReturn<Course>
@@ -74,18 +70,33 @@ export function useCourseContract({
 
   /* 合约写入方法 */
   createCourse: (title: string, instructor: Address, price: string, totalLessons: bigint) => Promise<WriteReturnType>
-  purchaseCourse: (courseId: bigint) => Promise<any>
-  updateCoursePrice: (courseId: bigint, newPrice: string) => Promise<any>
-  updateCourseProgress: (courseId: bigint, completedLessons: bigint) => Promise<any>
-  requestRefund: (courseId: bigint) => Promise<any>
-  certifyInstructor: (instructor: Address) => Promise<any>
-  revokeInstructor: (instructor: Address) => Promise<any>,
-  batchCertifyInstructors: (instructors: Address[]) => Promise<any>
-  updateCourse: (courseId: bigint, title: string, totalLessons: bigint) => Promise<any>
-  updatePlatformAddress: (newPlatformAddress: Address) => Promise<any>
-  publishCourse: (courseId: bigint) => Promise<any>
-  unpublishCourse: (courseId: bigint) => Promise<any>
-  deleteCourse: (courseId: bigint) => Promise<any>
+  purchaseCourse: (courseId: bigint) => Promise<WriteReturnType>
+  updateCoursePrice: (courseId: bigint, newPrice: string) => Promise<WriteReturnType>
+  updateCourseProgress: (courseId: bigint, completedLessons: bigint) => Promise<WriteReturnType>
+  requestRefund: (courseId: bigint) => Promise<WriteReturnType>
+  certifyInstructor: (instructor: Address) => Promise<WriteReturnType>
+  revokeInstructor: (instructor: Address) => Promise<WriteReturnType>
+  batchCertifyInstructors: (instructors: Address[]) => Promise<WriteReturnType>
+  updateCourse: (courseId: bigint, title: string, totalLessons: bigint) => Promise<WriteReturnType>
+  updatePlatformAddress: (newPlatformAddress: Address) => Promise<WriteReturnType>
+  publishCourse: (courseId: bigint) => Promise<WriteReturnType>
+  unpublishCourse: (courseId: bigint) => Promise<WriteReturnType>
+  deleteCourse: (courseId: bigint) => Promise<WriteReturnType>
+
+  /* Receipt */
+  createCourseReceipt: ReceiptReturnType
+  purchaseCourseReceipt: ReceiptReturnType
+  updateCoursePriceReceipt: ReceiptReturnType
+  updateCourseProgressReceipt: ReceiptReturnType
+  requestRefundReceipt: ReceiptReturnType
+  certifyInstructorReceipt: ReceiptReturnType
+  revokeInstructorReceipt: ReceiptReturnType
+  batchCertifyInstructorsReceipt: ReceiptReturnType
+  updatePlatformAddressReceipt: ReceiptReturnType
+  updateCourseReceipt: ReceiptReturnType
+  publishCourseReceipt: ReceiptReturnType
+  unpublishCourseReceipt: ReceiptReturnType
+  deleteCourseReceipt: ReceiptReturnType
 } {
 
   const factory = contractFactory(address, COURSE_CONTRACT_ABI)
@@ -230,226 +241,139 @@ export function useCourseContract({
   }
   
   // 购买课程
-  const purchaseCourseWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'purchaseCourse'
-  })
+  const purchaseCourseWriter = factory.write('purchaseCourse')
   /**
    * 购买课程
    * @param courseId 课程ID
-   * @returns 
+   * @returns
    */
   const purchaseCourse = async (courseId: bigint) => {
-    if (!purchaseCourseWriter.writeAsync) {
-      throw new Error('创建课程方法未创建')
-    }
-    return purchaseCourseWriter.writeAsync({ args: [courseId] })
+    return await purchaseCourseWriter.send(courseId)
   }
 
   // 更新课程价格
-  const updateCoursePriceWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'updateCoursePrice'
-  })
+  const updateCoursePriceWriter = factory.write('updateCoursePrice')
   /**
    * 更新课程价格
    * @param courseId 课程ID
    * @param newPrice 新的课程价格
-   * @returns 
+   * @returns
    */
   const updateCoursePrice = async (courseId: bigint, newPrice: string) => {
-    if (!updateCoursePriceWriter.writeAsync) {
-      throw new Error('更新课程价格方法未创建')
-    }
-    const parsedPrice = parsePrice(newPrice)
-    return updateCoursePriceWriter.writeAsync({ args: [courseId, parsedPrice] })
+    return await updateCoursePriceWriter.send(courseId, parsePrice(newPrice))
   }
 
   // 更新学习进度
-  const updateCourseProgressWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'updateProgress'
-  })
+  const updateCourseProgressWriter = factory.write('updateProgress')
   /**
    * 更新学习进度
    * @param courseId 课程ID
    * @param completedLessons 课程进度 （应该是百分比的整数表示，比如50表示50%）
-   * @returns 
+   * @returns
    */
-  const updateCourseProgress = (courseId: bigint, completedLessons: bigint) => {
-    if (!updateCourseProgressWriter.writeAsync) {
-      throw new Error('更新课程进度方法未创建')
-    }
-    return updateCourseProgressWriter.writeAsync({ args: [courseId, completedLessons] })
+  const updateCourseProgress = async (courseId: bigint, completedLessons: bigint) => {
+    return await updateCourseProgressWriter.send(courseId, completedLessons)
   }
 
   // 请求退款
-  const requestRefundWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'requestRefund'
-  })
+  const requestRefundWriter = factory.write('requestRefund')
   /**
    * 请求退款
    * @param courseId 课程ID
-   * @returns 
+   * @returns
    */
-  const requestRefund = (courseId: bigint) => {
-    if (!requestRefundWriter.writeAsync) {
-      throw new Error('请求退款方法未创建')
-    }
-    return requestRefundWriter.writeAsync({ args: [courseId] })
+  const requestRefund = async (courseId: bigint) => {
+    return await requestRefundWriter.send(courseId)
   }
 
   // 认证讲师
-  const certifyInstructorWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'certifyInstructor'
-  })
+  const certifyInstructorWriter = factory.write('certifyInstructor')
   /**
    * 认证讲师（仅平台管理员）
    * @param instructor 讲师地址
-   * @returns 
+   * @returns
    */
-  const certifyInstructor = (instructor: Address) => {
-    if (!certifyInstructorWriter.writeAsync) {
-      throw new Error('认证讲师方法未创建')
-    }
-    return certifyInstructorWriter.writeAsync({ args: [instructor] })
-  } 
+  const certifyInstructor = async (instructor: Address) => {
+    return await certifyInstructorWriter.send(instructor)
+  }
 
   // 撤销讲师认证
-  const revokeInstructorWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'revokeInstructor'  
-  })
+  const revokeInstructorWriter = factory.write('revokeInstructor')
   /**
    * 撤销讲师认证（仅平台管理员）
    * @param instructor 讲师地址
-   * @returns 
+   * @returns
    */
-  const revokeInstructor = (instructor: Address) => {
-    if (!revokeInstructorWriter.writeAsync) {
-      throw new Error('撤销讲师认证方法未创建')
-    }
-    return revokeInstructorWriter.writeAsync({ args: [instructor] })
+  const revokeInstructor = async (instructor: Address) => {
+    return await revokeInstructorWriter.send(instructor)
   }
 
   // 批量认证讲师
-  const batchCertifyInstructorsWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'batchCertifyInstructors'
-  })
+  const batchCertifyInstructorsWriter = factory.write('batchCertifyInstructors')
   /**
-   * 批量认证讲师（仅平台管理员）     
+   * 批量认证讲师（仅平台管理员）
    * @param instructors 讲师地址数组
-   * @returns 
+   * @returns
    */
-  const batchCertifyInstructors = (instructors: Address[]) => {
-    if (!batchCertifyInstructorsWriter.writeAsync) {
-      throw new Error('批量认证讲师方法未创建')
-    }
-    return batchCertifyInstructorsWriter.writeAsync({ args: [instructors] })
+  const batchCertifyInstructors = async (instructors: Address[]) => {
+    return await batchCertifyInstructorsWriter.send(instructors)
   }
 
   // 更新平台地址
-  const updatePlatformAddressWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'updatePlatformAddress'
-  })
+  const updatePlatformAddressWriter = factory.write('updatePlatformAddress')
   /**
-    * 更新平台地址（仅平台管理员）
-    * @param newPlatformAddress 新平台地址
-    */
+   * 更新平台地址（仅平台管理员）
+   * @param newPlatformAddress 新平台地址
+   */
   const updatePlatformAddress = async (newPlatformAddress: Address) => {
-    if (!updatePlatformAddressWriter.writeAsync) {
-      throw new Error('更新平台地址方法未创建')
-    }
-    return updatePlatformAddressWriter.writeAsync({ args: [newPlatformAddress] })
+    return await updatePlatformAddressWriter.send(newPlatformAddress)
   }
 
   // 更新课程
-  const updateCourseWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'updateCourse'
-  })
+  const updateCourseWriter = factory.write('updateCourse')
   /**
-    * 更新课程信息（仅讲师）
-    * @param courseId 课程ID
-    * @param title 新标题
-    * @param totalLessons 新课时数
-    */
+   * 更新课程信息（仅讲师）
+   * @param courseId 课程ID
+   * @param title 新标题
+   * @param totalLessons 新课时数
+   */
   const updateCourse = async (courseId: bigint, title: string, totalLessons: bigint) => {
-    if (!updateCourseWriter.writeAsync) {
-      throw new Error('更新课程方法未创建')
-    }
-    return updateCourseWriter.writeAsync({ args: [courseId, title, totalLessons] })
+    return await updateCourseWriter.send(courseId, title, totalLessons)
   }
 
   // 发布课程
-  const publishCourseWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'publishCourse'
-  })
+  const publishCourseWriter = factory.write('publishCourse')
   /**
    * 发布课程（仅讲师）
    * @param courseId 课程ID
-   * @returns 
+   * @returns
    */
   const publishCourse = async (courseId: bigint) => {
-    if (!publishCourseWriter.writeAsync) {
-      throw new Error('发布课程方法未创建')
-    }
-    return publishCourseWriter.writeAsync({ args: [courseId] })
+    return await publishCourseWriter.send(courseId)
   }
 
   // 取消发布课程
-  const unpublishCourseWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'unpublishCourse'
-  })
+  const unpublishCourseWriter = factory.write('unpublishCourse')
   /**
-    * 取消发布课程（仅讲师）
-    * @param courseId 课程ID
-    */
+   * 取消发布课程（仅讲师）
+   * @param courseId 课程ID
+   */
   const unpublishCourse = async (courseId: bigint) => {
-    if (!unpublishCourseWriter.writeAsync) {
-      throw new Error('取消发布课程方法未创建')
-    }
-    return unpublishCourseWriter.writeAsync({ args: [courseId] })
+    return await unpublishCourseWriter.send(courseId)
   }
 
   // 删除课程
-  const deleteCourseWriter = useContractWrite({
-    address,
-    abi: COURSE_CONTRACT_ABI,
-    functionName: 'deleteCourse'
-  })
+  const deleteCourseWriter = factory.write('deleteCourse')
   /**
-    * @dev 删除课程（仅讲师，且无学生购买）
-    * @param courseId 课程ID
-    */
+   * @dev 删除课程（仅讲师，且无学生购买）
+   * @param courseId 课程ID
+   */
   const deleteCourse = async (courseId: bigint) => {
-    if (!unpublishCourseWriter.writeAsync) {
-      throw new Error('取消发布课程方法未创建')
-    }
-    return deleteCourseWriter.writeAsync({ args: [courseId] })
+    return await deleteCourseWriter.send(courseId)
   }
 
   return {
-    createCourseReceipt: createCourseWriter.receipt,
-    purchaseCourseReceipt: purchaseCourseWriter.receipt,
-    
+    // ========== 读取方法 ==========
     hasAccess,
     getCourse,
     getStudentCourses,
@@ -462,7 +386,8 @@ export function useCourseContract({
     getRefundRequest,
     getRefundEligibilityDetails,
     isCertifiedInstructor,
-    
+
+    // ========== 写入方法 ==========
     createCourse,
     purchaseCourse,
     updateCoursePrice,
@@ -475,6 +400,21 @@ export function useCourseContract({
     updateCourse,
     publishCourse,
     unpublishCourse,
-    deleteCourse
+    deleteCourse,
+
+    // ========== Receipt ==========
+    createCourseReceipt: createCourseWriter.receipt,
+    purchaseCourseReceipt: purchaseCourseWriter.receipt,
+    updateCoursePriceReceipt: updateCoursePriceWriter.receipt,
+    updateCourseProgressReceipt: updateCourseProgressWriter.receipt,
+    requestRefundReceipt: requestRefundWriter.receipt,
+    certifyInstructorReceipt: certifyInstructorWriter.receipt,
+    revokeInstructorReceipt: revokeInstructorWriter.receipt,
+    batchCertifyInstructorsReceipt: batchCertifyInstructorsWriter.receipt,
+    updatePlatformAddressReceipt: updatePlatformAddressWriter.receipt,
+    updateCourseReceipt: updateCourseWriter.receipt,
+    publishCourseReceipt: publishCourseWriter.receipt,
+    unpublishCourseReceipt: unpublishCourseWriter.receipt,
+    deleteCourseReceipt: deleteCourseWriter.receipt,
   }
 }
