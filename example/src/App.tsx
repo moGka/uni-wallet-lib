@@ -11,6 +11,11 @@ function App() {
       appName="uni-wallet-lib Example"
       projectId="YOUR_WALLETCONNECT_PROJECT_ID"
       alchemyApiKey="YOUR_ALCHEMY_API_KEY"
+      enableAuth={true}  // ← 启用认证
+      authConfig={{
+        autoSignOnConnect: true,  // ← 连接钱包后自动弹出签名
+        apiBaseUrl: '/api/v1/auth',  // ← 你的后端 API 地址
+      }}
     >
       <BrowserRouter>
         <div style={{
